@@ -1,0 +1,4 @@
+site_id,site_name,location,max_capacity_kw,current_demand_kw,utilization_percent,warning_threshold_percent
+1,Downtown Central Hub,"Sector 4, Commercial District",180.0,0.0,0.0,80.0
+2,Tech Park Metro Station,Electronic City Phase 1,120.0,0.0,0.0,75.0
+3,Airport Expressway Terminal,Highway Exit 12B,250.0,0.0,0.0,85.0

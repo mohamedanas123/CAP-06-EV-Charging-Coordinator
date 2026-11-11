@@ -1,0 +1,13 @@
+.git/
+.gitignore
+.github/
+.idea/
+.vscode/
+**/target/
+**/node_modules/
+**/dist/
+**/__pycache__/
+*.log
+mysql_data/
+analytics/*.csv
+

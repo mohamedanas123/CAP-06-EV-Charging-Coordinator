@@ -1,0 +1,9 @@
+request_id,driver_name,vehicle_plate,site_name,requested_kwh,priority_score,waiting_time_min,joined_at,status
+1,Alex Chen,KA-01-EV-1024,Downtown Central Hub,35.0,0.0,244,2026-11-10T13:20:45.172923,CANCELLED
+2,Sarah Miller,MH-02-EV-7890,Downtown Central Hub,50.0,0.0,244,2026-11-10T13:20:45.215001,COMPLETED
+3,David Kumar,DL-03-EV-3341,Downtown Central Hub,25.0,0.0,244,2026-11-10T13:20:45.244804,COMPLETED
+4,Alex Chen,KA-05-EV-4412,Downtown Central Hub,20.0,0.0,244,2026-11-10T13:20:45.27781,COMPLETED
+5,Sarah Miller,MH-02-EV-7890,Downtown Central Hub,44.7,0.0,139,2026-11-10T15:05:21.268372,CANCELLED
+6,Sarah Miller,MH-02-EV-7890,Downtown Central Hub,19.7,0.0,110,2026-11-10T15:34:31.242031,COMPLETED
+7,Alex Chen,KA-01-EV-1024,Downtown Central Hub,25.0,0.0,101,2026-11-10T15:43:15.38746,COMPLETED
+8,Alex Chen,KA-01-EV-1024,Downtown Central Hub,25.0,0.0,0,2026-11-10T17:24:42.392718,ASSIGNED

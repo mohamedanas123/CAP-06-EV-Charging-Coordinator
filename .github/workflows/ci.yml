@@ -1,0 +1,76 @@
+name: CAP-06 CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  # 1. Backend Build & Test
+  backend-test:
+    name: Backend (Spring Boot & Java 21)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Compile and Test Spring Boot
+        working-directory: ./evcharging
+        run: |
+          chmod +x mvnw
+          ./mvnw clean test
+
+  # 2. Frontend Build & Lint
+  frontend-build:
+    name: Frontend (React & Vite)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: ./frontend/package-lock.json
+
+      - name: Install Dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Build Production SPA
+        working-directory: ./frontend
+        run: npm run build
+
+  # 3. Python Telemetry Simulator Validation
+  simulator-check:
+    name: Simulator (Python & NumPy)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Simulator Dependencies
+        working-directory: ./simulator
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Validate Python Syntax & Imports
+        run: |
+          python -m py_compile simulator/simulator.py
+          python -m py_compile simulator/telemetry_generator.py
+          python -m py_compile simulator/api_client.py
+

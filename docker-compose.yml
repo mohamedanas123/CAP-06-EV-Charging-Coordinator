@@ -1,0 +1,91 @@
+services:
+  # 1. MySQL 8 Database
+  mysql:
+    image: mysql:8.0
+    container_name: cap06-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-anas}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-ev-charging}
+    ports:
+      - "${MYSQL_PORT:-3307}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - ev-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-anas}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  # 2. Spring Boot Java Backend
+  backend:
+    build:
+      context: ./evcharging
+      dockerfile: Dockerfile
+    container_name: cap06-backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:mysql://mysql:3306/ev-charging?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:-root}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-anas}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO:-update}
+      APP_JWT_SECRET: ${JWT_SECRET:-404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    networks:
+      - ev-network
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 8080 || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  # 3. React Vite Frontend (Nginx Production Server)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: cap06-frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${FRONTEND_PORT:-5173}:80"
+    networks:
+      - ev-network
+
+  # 4. Python Telemetry Simulator
+  simulator:
+    build:
+      context: ./simulator
+      dockerfile: Dockerfile
+    container_name: cap06-simulator
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      BASE_URL: ${SIMULATOR_BASE_URL:-http://backend:8080/api}
+      OPERATOR_EMAIL: ${OPERATOR_EMAIL:-admin@evcharging.com}
+      OPERATOR_PASSWORD: ${OPERATOR_PASSWORD:-Password123!}
+      SIMULATOR_INTERVAL: ${SIMULATOR_INTERVAL:-5.0}
+    command: ["--base-url", "http://backend:8080/api", "--interval", "5.0"]
+    networks:
+      - ev-network
+
+volumes:
+  mysql_data:
+    name: cap06_mysql_data
+
+networks:
+  ev-network:
+    name: cap06_network
+    driver: bridge

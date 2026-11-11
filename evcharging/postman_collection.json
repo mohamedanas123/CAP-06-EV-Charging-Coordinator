@@ -1,0 +1,245 @@
+{
+	"info": {
+		"_postman_id": "b3e9b110-67df-4228-98e3-evcharging-collection",
+		"name": "Smart EV Charging Platform API",
+		"description": "Comprehensive Postman test collection for Authentication, Vehicles, Sites, Chargers, Queue, Sessions, Telemetry, and Dashboard.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"driver@example.com\",\n  \"password\": \"Password123!\"\n}"
+						},
+						"url": "{{baseUrl}}/api/auth/register"
+					}
+				},
+				{
+					"name": "Login User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.token) {",
+									"    pm.environment.set(\"jwt_token\", jsonData.token);",
+									"    pm.environment.set(\"userId\", jsonData.userId);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"driver@example.com\",\n  \"password\": \"Password123!\"\n}"
+						},
+						"url": "{{baseUrl}}/api/auth/login"
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Vehicles",
+			"item": [
+				{
+					"name": "Add Vehicle",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"registrationNumber\": \"KA01EV1234\",\n  \"batteryCapacityKwh\": 60.0,\n  \"currentSoc\": 20.0\n}"
+						},
+						"url": "{{baseUrl}}/api/vehicles/user/{{userId}}"
+					}
+				},
+				{
+					"name": "Get User Vehicles",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+						"url": "{{baseUrl}}/api/vehicles/user/{{userId}}"
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Sites & Chargers",
+			"item": [
+				{
+					"name": "Create Charging Site",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"siteName\": \"Central Station Hub\",\n  \"location\": \"Downtown Sector 4\",\n  \"maxCapacityKw\": 150.0,\n  \"warningThresholdPercent\": 80.0\n}"
+						},
+						"url": "{{baseUrl}}/api/sites"
+					}
+				},
+				{
+					"name": "Add Charger to Site",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chargerName\": \"FastCharger-Bay-1\",\n  \"maxPowerKw\": 50.0\n}"
+						},
+						"url": "{{baseUrl}}/api/chargers/site/1"
+					}
+				},
+				{
+					"name": "Get All Sites",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+						"url": "{{baseUrl}}/api/sites"
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Queue & Scheduling",
+			"item": [
+				{
+					"name": "Join Queue (Charging Request)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"vehicleId\": 1,\n  \"siteId\": 1,\n  \"requestedEnergyKwh\": 35.0\n}"
+						},
+						"url": "{{baseUrl}}/api/requests"
+					}
+				},
+				{
+					"name": "Trigger Site Scheduling Manually",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+						"url": "{{baseUrl}}/api/sites/1/schedule"
+					}
+				},
+				{
+					"name": "Get Queue Status by Site",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+						"url": "{{baseUrl}}/api/requests/site/1"
+					}
+				}
+			]
+		},
+		{
+			"name": "5. Sessions & Failures",
+			"item": [
+				{
+					"name": "Get Active Sessions",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+						"url": "{{baseUrl}}/api/sessions/active"
+					}
+				},
+				{
+					"name": "Start Session",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+						"url": "{{baseUrl}}/api/sessions/1/start"
+					}
+				},
+				{
+					"name": "Complete Session",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+						"url": "{{baseUrl}}/api/sessions/1/complete"
+					}
+				},
+				{
+					"name": "Interrupt Session (Failure Scenario)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reason\": \"Thermal limit exceeded on hardware\"\n}"
+						},
+						"url": "{{baseUrl}}/api/sessions/1/interrupt"
+					}
+				}
+			]
+		},
+		{
+			"name": "6. Telemetry & Dashboard",
+			"item": [
+				{
+					"name": "Post Telemetry",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"chargerId\": 1,\n  \"sessionId\": 1,\n  \"powerConsumptionKw\": 48.2,\n  \"energyKwh\": 12.5,\n  \"socPercent\": 45.0,\n  \"temperatureCelsius\": 36.5,\n  \"recordedAt\": \"2026-11-10T12:00:00\"\n}"
+						},
+						"url": "{{baseUrl}}/api/telemetry"
+					}
+				},
+				{
+					"name": "Get Dashboard Summary",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+						"url": "{{baseUrl}}/api/dashboard/summary"
+					}
+				},
+				{
+					"name": "Get Dashboard Alerts",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+						"url": "{{baseUrl}}/api/dashboard/alerts"
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080"
+		}
+	]
+}
+

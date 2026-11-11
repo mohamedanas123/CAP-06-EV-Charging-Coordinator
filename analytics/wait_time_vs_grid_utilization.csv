@@ -1,0 +1,4 @@
+scheduling_policy,avg_wait_time_minutes,grid_utilization_percent,peak_demand_kw,fairness_gini_index
+FIFO Only (Strict Fairness),18.5,68.2,102.3,0.12
+Priority + Capacity Capped (CAP-06 Balanced),11.2,84.6,126.9,0.24
+Max-Utilization Greedy (Unfair Throughput),24.8,96.1,144.1,0.58
