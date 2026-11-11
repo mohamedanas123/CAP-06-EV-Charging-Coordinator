@@ -64,6 +64,8 @@ share/python-wheels/
 *.egg
 MANIFEST
 .env
+.env.*
+!.env.example
 venv/
 ENV/
 env.bak/
