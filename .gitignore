@@ -74,4 +74,5 @@ venv.bak/
 # Database & Local Logs
 *.log
 mysql_data/
+analytics/data/
 
