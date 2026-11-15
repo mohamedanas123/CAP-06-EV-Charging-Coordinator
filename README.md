@@ -160,7 +160,6 @@ python simulator.py --fail-session 1
 | Role | Email | Password |
 | :--- | :--- | :--- |
 | **Admin** | `admin@evcharging.com` | `Password123!` |
-| **Driver 1** | `alex@example.com` | `Password123!` |
-| **Driver 2** | `sarah@example.com` | `Password123!` |
-| **Driver 3** | `david@example.com` | `Password123!` |
+| **Driver 1** | `anas@gmai.com` | `12345678` |
+
 
